@@ -1,0 +1,11 @@
+﻿  Source.cpp
+i:\infwmed\infwmed\infwmed\infwmed\neuron.h(37): warning C4018: '<': signed/unsigned mismatch
+i:\infwmed\infwmed\infwmed\infwmed\network.h(74): warning C4018: '<': signed/unsigned mismatch
+i:\infwmed\infwmed\infwmed\infwmed\network.h(76): warning C4018: '<': signed/unsigned mismatch
+i:\infwmed\infwmed\infwmed\infwmed\network.h(97): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 1 has type 'double'
+i:\infwmed\infwmed\infwmed\infwmed\network.h(125): warning C4018: '<': signed/unsigned mismatch
+i:\infwmed\infwmed\infwmed\infwmed\network.h(128): warning C4018: '<': signed/unsigned mismatch
+i:\infwmed\infwmed\infwmed\infwmed\network.h(131): warning C4018: '<': signed/unsigned mismatch
+i:\infwmed\infwmed\infwmed\infwmed\network.h(141): warning C4018: '<': signed/unsigned mismatch
+  InfWMed.vcxproj -> I:\InfWMed\InfWMed\InfWMed\Debug\InfWMed.exe
+  InfWMed.vcxproj -> I:\InfWMed\InfWMed\InfWMed\Debug\InfWMed.pdb (Full PDB)
