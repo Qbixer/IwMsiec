@@ -2,11 +2,40 @@
 #include <allegro5/allegro.h>
 #include "allegro5/allegro_image.h"
 #include "network.h"
+#include <iostream>
 
-
+using namespace std;
 int main()
 {
-	network * siec = new network(5, 0.2, "test.bmp", "test.bmp",4);
+	int opcja;
+	bool loop = true;
+	while (loop)
+	{
+		cout << "\n\n1 - Generowanie danych z obrazkow\n2 - Utowrzenie sieci\n3 - Testowanie sieci zbudowanej\n9 - Wyjscie\n";
+		cin >> opcja;
+		switch (opcja)
+		{
+		case 1:
+		{
+			int offset;
+			cout << "Podaj offset\n";
+			cin >> offset;
+			input(offset, "test.bmp", "test.bmp", "test.bmp");
+			break;
+		}
+		case 4:
+		{
+			loop = false;
+			break;
+		}
+		default:
+		{
+			cout << "Wybierz opcje";
+			break;
+		}
+		}
+	}
+	network * siec = new network(5, 0.2, "test.bmp", "test.bmp", "test.bmp",4);
 	siec->one_iteration_matrix(false);
 	ALLEGRO_DISPLAY* display = NULL;
 	display = al_create_display(siec->in->width,siec->in->height);

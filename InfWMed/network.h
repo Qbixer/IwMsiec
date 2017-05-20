@@ -13,9 +13,9 @@ public:
 	float ** matrix_expected = nullptr;
 	input *in = nullptr;
 
-	network(float offset, float u, char *filename, char* filename_expected, int layers)
+	network(float offset, float u, char *filename, char* filename_expected, char* filename_mask, int layers)
 	{
-		this->in = new input(offset, filename,filename_expected);
+		this->in = new input(offset, filename,filename_expected, filename_mask);
 		this->u = u;
 		int neurons = offset*offset;
 		std::vector<neuron*> tmp = std::vector<neuron*>();

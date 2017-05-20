@@ -9,8 +9,11 @@ class input
 public:
 	float ** matrix;
 	float ** matrix_expected;
+	float ** matrix_mask;
+
 	ALLEGRO_BITMAP *image = NULL;
 	ALLEGRO_BITMAP *image_expected = NULL;
+	ALLEGRO_BITMAP *image_mask = NULL;
 	int offset = 8;
 	float ** window;
 	int width;
@@ -19,24 +22,24 @@ public:
 	int cur_y = 0;
 	float expected = 0;
 
-	input(int offset,char *filename, char *filename_expected)
+	input(int offset,char *filename, char *filename_expected, char *filename_mask)
 	{
 		this->offset = offset;
-		load_image(filename, filename_expected);
-	}
-
-	void load_image(char *filename, char *filename_expected)
-	{
 		al_init();
 		al_init_image_addon();
 		al_init_primitives_addon();
-		image = al_load_bitmap(filename);
+		load_image(filename, filename_expected,filename_mask);
 		width = al_get_bitmap_width(image);
 		height = al_get_bitmap_height(image);
-		al_lock_bitmap(image, al_get_bitmap_format(image), ALLEGRO_LOCK_READONLY);
-		image_expected = al_load_bitmap(filename_expected);
-		al_lock_bitmap(image_expected, al_get_bitmap_format(image_expected), ALLEGRO_LOCK_READONLY);
 		initiate_matrix();
+	}
+
+	void load_image(char *filename, char *filename_expected, char *filename_mask)
+	{
+		image = al_load_bitmap(filename);
+		image_expected = al_load_bitmap(filename_expected);
+		image_mask = al_load_bitmap(filename_mask);
+
 	}
 	
 	void initiate_matrix()
@@ -51,7 +54,9 @@ public:
 				//odpowiednio przesuniety na srodek
 				if (i - offset >= 0 && i - offset < width && j - offset >= 0 && j - offset < height)
 					//tutaj chyba dzielic na 255 trzeba, chyba ze zwraca w 0-1
-					matrix[i][j] = al_get_pixel(image, i - offset + 1, j - offset + 1).b/255;
+					matrix[i][j] = al_get_pixel(image, i - offset + 1, j - offset + 1).b;
+				if (al_get_pixel(image, i - offset + 1, j - offset + 1).r != al_get_pixel(image, i - offset + 1, j - offset + 1).b != al_get_pixel(image, i - offset + 1, j - offset + 1).g)
+					printf("abc");
 				else
 					matrix[i][j] = 0.F;
 			}
@@ -63,7 +68,7 @@ public:
 			matrix_expected[i] = new float[height];
 			for (int j = 0; j < height; j++)
 			{
-				matrix[i][j] = al_get_pixel(image, i + 1, j + 1).b / 255;
+				matrix_expected[i][j] = al_get_pixel(image, i + 1, j + 1).b;
 			}
 		}
 		window = new float*[offset * 2 + 1];
@@ -72,6 +77,7 @@ public:
 			window[i] = new float[offset * 2 + 1];
 		}
 	}
+
 
 	bool take_new_window()
 	{
