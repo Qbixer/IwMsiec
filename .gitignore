@@ -4,16 +4,7 @@
 
 /Debug
 /packages
-/packages
-/packages
-/packages/Allegro.5.2.2.1
-/.vs/InfWMed/v15
-/.vs/InfWMed/v15
-/.vs/InfWMed/v15
-/.vs/InfWMed/v15
-/InfWMed/healthy
-/InfWMed/healthy_fovmask
-/InfWMed/healthy_manualsegm
+/.vs
 /InfWMed/healthy
 /InfWMed/healthy_fovmask
 /InfWMed/healthy_manualsegm
