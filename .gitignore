@@ -17,3 +17,9 @@
 /InfWMed/healthy
 /InfWMed/healthy_fovmask
 /InfWMed/healthy_manualsegm
+/InfWMed/InfWMed.vcxproj
+/InfWMed/InfWMed.vcxproj.filters
+/InfWMed/InfWMed.vcxproj.user
+/InfWMed/Debug
+InfWMed.sln
+InfWMed.VC.db
