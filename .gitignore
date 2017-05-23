@@ -3,6 +3,8 @@
 ################################################################################
 
 /Debug
+/Release
+/x64
 /packages
 /.vs
 /InfWMed/healthy
@@ -12,5 +14,10 @@
 /InfWMed/InfWMed.vcxproj.filters
 /InfWMed/InfWMed.vcxproj.user
 /InfWMed/Debug
+/InfWMed/Release
+/InfWMed/x64
 InfWMed.sln
 InfWMed.VC.db
+*.jpg
+*.txt
+*.bmp

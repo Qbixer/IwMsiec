@@ -24,7 +24,7 @@ public:
 		this->input_value = input_value;
 		this->layer = layer;
 		this->weight = new float[1];
-		this->weight[0] = static_cast <float> (rand()) / static_cast <float> (RAND_MAX) / 2 + 0.5;
+		reset_weights(layer);
 	}
 
 	neuron(std::vector<neuron*> input, int layer)
@@ -34,9 +34,21 @@ public:
 		this->input_size = input.size();
 		this->layer = layer;
 		this->weight = new float[input.size()];
-		for (int i = 0; i < input.size(); i++)
+		reset_weights(layer);
+	}
+
+	void reset_weights(int layer)
+	{
+		if(layer == 0)
 		{
-			this->weight[i] = static_cast <float> (rand()) / static_cast <float> (RAND_MAX) / 2 + 0.5;
+			this->weight[0] = static_cast <float> (rand()) / static_cast <float> (RAND_MAX) / 2 + 0.5;
+		}
+		else
+		{
+			for (int i = 0; i < input.size(); i++)
+			{
+				this->weight[i] = static_cast <float> (rand()) / static_cast <float> (RAND_MAX) / 2 + 0.5;
+			}
 		}
 	}
 
@@ -77,7 +89,7 @@ public:
 		}
 		else
 			weight[0] = weight[0] + u*mistake*((2 * k*exp(-k*(weight_sum - x0))) / (pow((exp(-k*(weight_sum - x0)) + 1), 2)))*input_value;
-		base_weight = base_weight + u*mistake*((2 * k*exp(-k*(weight_sum - x0))) / (pow((exp(-k*(weight_sum - x0)) + 1), 2)));
+		base_weight = base_weight + u*mistake*((2 * k*exp(-k*(weight_sum - x0))) / (pow((exp(-k*(weight_sum - x0)) + 1), 2)))*1;
 	}
 
 	void set_input_value(float input)
