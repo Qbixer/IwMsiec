@@ -28,7 +28,7 @@ int main()
 			cout << "1 - healthy\n2 - glaucoma\n3 - diabetic_retinopathy\n4 - test\n";
 			cin >> typ;
 			//Zmienic
-			for (int i = 1;i <= 1;i++)
+			for (int i = 1;i <= 15;i++)
 			{	
 				string a,b,c;
 				switch (typ)
@@ -121,7 +121,7 @@ int main()
 			cin >> layers;
 			cout << "Podaj relatywne wielkosci zbiorow: tp, tn, pnn, nnp\n";
 			cin >> ptp >> ptn >> ppnn >> pnnp;
-			cout << "1 - healthy\n2 - glaucoma\n3 - diabetic_retinopathy\n";
+			cout << "1 - healthy\n2 - glaucoma\n3 - diabetic_retinopathy\n4 - test\n";
 			cin >> typ;
 			network(offset, u,layers,typ,ptp,ptn,ppnn,pnnp);
 			break;
@@ -129,7 +129,7 @@ int main()
 		case 3:
 			{
 			input *in = new input(5);
-			in->do_stuff2("glaucoma/01_g.jpg", "glaucoma/a/01_g.jpg", "glaucoma/a/01_g_mask.jpg", 2, 3, 0);
+			in->do_stuff2("healthy/01_h.jpg", "healthy/a/01_h.jpg", "healthy/a/01_h_mask.jpg", 2, 3, 0);
 			break;
 			}
 		case 9:

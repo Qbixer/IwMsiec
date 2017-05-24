@@ -44,7 +44,7 @@ public:
 	{
 		this->offset = offset;
 	}
-
+	//Work as intended
 	void load_image(char *filename, char *filename_expected, char *filename_mask)
 	{
 		image = al_load_bitmap(filename);
@@ -53,7 +53,7 @@ public:
 		width = al_get_bitmap_width(image);
 		height = al_get_bitmap_height(image);
 	}
-
+	//Work as intended
 	void open_files(int typ)
 	{
 		switch (typ)
@@ -89,7 +89,7 @@ public:
 			tp.open("test/tp.txt", fstream::app);
 		}
 	}
-
+	//Work as intended
 	bool take_random_window()
 	{
 		if (itp + itn + innp + ipnn == sum)
@@ -190,14 +190,14 @@ public:
 		}
 		return true;
 	}
-
+	//Work as intended
 	void unload_image()
 	{
 		al_destroy_bitmap(image);
 		al_destroy_bitmap(image_expected);
 		al_destroy_bitmap(image_mask);
 	}
-
+	//Work as intended
 	void draw_bitmaps_test()
 	{
 		ALLEGRO_BITMAP* bit1 = NULL;
@@ -228,7 +228,7 @@ public:
 		}
 		al_save_bitmap("test/bit3.jpg", bit3);
 	}
-
+	//Work as intended
 	void initiate_matrix()
 	{
 		matrix = new float*[width + 2 * offset];
@@ -334,7 +334,7 @@ public:
 				}
 				else
 				{
-					for (int k = 0;k < offset*offset;k++)
+					for (int k = 0;k < (offset*2+1)*(offset*2+1);k++)
 						test >> net->siec[i][j]->weight[k];
 					test >> net->siec[i][j]->base_weight;
 				}
@@ -357,7 +357,7 @@ public:
 		load_image(filename, filename_expected, filename_mask);
 		initiate_matrix();
 		open_files(typ);
-		draw_bitmaps_test();
+		//draw_bitmaps_test();
 		while (take_random_window());
 		nnp.close();
 		pnn.close();
