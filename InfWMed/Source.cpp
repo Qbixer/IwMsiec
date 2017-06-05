@@ -14,7 +14,7 @@ int main()
 	bool loop = true;
 	while (loop)
 	{
-		cout << "\n\n1 - Generowanie danych z obrazkow\n2 - Utowrzenie sieci\n3 - Testowanie sieci zbudowanej\n9 - Wyjscie\n";
+		cout << "\n\n1 - Generowanie danych z obrazkow\n2 - Utowrzenie sieci\n3 - Testowanie sieci zbudowanej (losowy obraz)\n4 - Testowanie sieci zbudowanej (ze statystykami)\n9 - Wyjscie\n";
 		cin >> opcja;
 		switch (opcja)
 		{
@@ -28,7 +28,7 @@ int main()
 			cout << "1 - healthy\n2 - glaucoma\n3 - diabetic_retinopathy\n4 - test\n";
 			cin >> typ;
 			//Zmienic
-			for (int i = 1;i <= 15;i++)
+			for (int i = 1;i <= 1;i++)
 			{	
 				string a,b,c;
 				switch (typ)
@@ -112,7 +112,7 @@ int main()
 		case 2:
 		{
 			int offset,layers,ptp,ptn,ppnn,pnnp,typ;
-			float u;
+			double u;
 			cout << "Podaj offset\n";
 			cin >> offset;
 			cout << "Podaj wspolczynnik uczenia sie\n";
@@ -127,11 +127,115 @@ int main()
 			break;
 		}
 		case 3:
-			{
-			input *in = new input(5);
-			in->do_stuff2("healthy/01_h.jpg", "healthy/a/01_h.jpg", "healthy/a/01_h_mask.jpg", 2, 3, 0);
+		{
+			int offset, typ, layers,k_set;
+			string obraz;
+			cout << "Podaj offset\n";
+			cin >> offset;
+			cout << "1 - healthy\n2 - glaucoma\n3 - diabetic_retinopathy\n4 - test\n";
+			cin >> typ;
+			cout << "Podaj ilosc warstw\n";
+			cin >> layers;
+			cout << "Podaj obraz do przetworzenia\n";
+			cin >> obraz;
+			char* path = new char[obraz.size() + 1];
+			strcpy(path, obraz.c_str());
+			cout << "Podaj obraz do zapisu\n";
+			cin >> obraz;
+			input *in = new input(offset);
+			in->do_stuff2(path,obraz, typ, layers,0);
 			break;
+		}
+		case 4:
+		{
+			int offset, typ, layers,i;
+			string obraz;
+			cout << "Podaj offset\n";
+			cin >> offset;
+			cout << "Podaj ilosc warstw\n";
+			cin >> layers;
+			cout << "1 - healthy\n2 - glaucoma\n3 - diabetic_retinopathy\n4 - test\n";
+			cin >> typ;
+			cout << "Podaj ktore zdjecie\n";
+			cin >> i;			
+			string a, b, c;
+			switch (typ)
+			{
+			case 1:
+			{
+				a += "healthy/";
+				b += "healthy/a/";
+				c += "healthy/a/";
+				if (i < 10)
+				{
+					a += "0";
+					b += "0";
+					c += "0";
+				}
+				a += to_string(i);
+				b += to_string(i);
+				c += to_string(i);
+				a += "_h.jpg";
+				b += "_h.jpg";
+				c += "_h_mask.jpg";
+				break;
 			}
+			case 2:
+			{
+				a += "glaucoma/";
+				b += "glaucoma/a/";
+				c += "glaucoma/a/";
+				if (i < 10)
+				{
+					a += "0";
+					b += "0";
+					c += "0";
+				}
+				a += to_string(i);
+				b += to_string(i);
+				c += to_string(i);
+				a += "_g.jpg";
+				b += "_g.jpg";
+				c += "_g_mask.jpg";
+				break;
+			}
+			case 3:
+			{
+				a += "diabetic_retinopathy/";
+				b += "diabetic_retinopathy/a/";
+				c += "diabetic_retinopathy/a/";
+				if (i < 10)
+				{
+					a += "0";
+					b += "0";
+					c += "0";
+				}
+				a += to_string(i);
+				b += to_string(i);
+				c += to_string(i);
+				a += "_dr.jpg";
+				b += "_dr.jpg";
+				c += "_dr_mask.jpg";
+				break;
+			}
+			case 4:
+			{
+				a += "test/01_o.jpg";
+				b += "test/01_e.jpg";
+				c += "test/01_m.jpg";
+				break;
+			}
+			}
+			input *in = new input(offset);
+			char* image = new char[a.size() + 1];
+			strcpy(image, a.c_str());
+			char* image_good = new char[b.size() + 1];
+			strcpy(image_good, b.c_str());
+			char* image_mask = new char[c.size() + 1];
+			strcpy(image_mask, c.c_str());
+			in->do_stuff3(image, image_good, image_mask, typ,layers);
+			break;
+		}
 		case 9:
 		{
 			loop = false;

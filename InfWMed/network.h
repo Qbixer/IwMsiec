@@ -13,20 +13,21 @@ class network
 public:
 	const static int max_set_count = 10;
 	std::vector<std::vector<neuron*>> siec;
-	float u;
-	std::vector<float**> test_true_positive[max_set_count];
-	std::vector<float**> test_true_negative[max_set_count];
-	std::vector<float**> test_negative_near_positive[max_set_count];
-	std::vector<float**> test_positive_near_negative[max_set_count];
-	float ** window;
+	double u;
+	std::vector<double**> test_true_positive[max_set_count];
+	std::vector<double**> test_true_negative[max_set_count];
+	std::vector<double**> test_negative_near_positive[max_set_count];
+	std::vector<double**> test_positive_near_negative[max_set_count];
+	double ** window;
 	int tp_set, tn_set, pnn_set, nnp_set;
 	int tp_cur = 0, tn_cur = 0, pnn_cur = 0, nnp_cur = 0;
 	ifstream tp;
 	ifstream tn;
 	ifstream nnp;
 	ifstream pnn;
+	int ttp, ttn, tfp, tfn;
 
-	network(int offset, float u,int layers, int typ, int tp_prop,int tn_prop,int pnn_prop, int nnp_prop)
+	network(int offset, double u,int layers, int typ, int tp_prop,int tn_prop,int pnn_prop, int nnp_prop)
 	{	
 		this->u = u;
 		initalize_matrix(offset);
@@ -79,22 +80,22 @@ public:
 		}
 		int zmienna = 0;
 		string dummyLine;
-		float ** window;
-		float ** window2;
-		float ** window3;
-		float ** window4;
+		double ** window;
+		double ** window2;
+		double ** window3;
+		double ** window4;
 		while (!tp.eof() && !tn.eof() && !nnp.eof() && !pnn.eof())
 		{
-			window = new float*[offset * 2 + 1];
-			window2 = new float*[offset * 2 + 1];
-			window3 = new float*[offset * 2 + 1];
-			window4 = new float*[offset * 2 + 1];
+			window = new double*[offset * 2 + 1];
+			window2 = new double*[offset * 2 + 1];
+			window3 = new double*[offset * 2 + 1];
+			window4 = new double*[offset * 2 + 1];
 			for (int i = 0; i < offset * 2 + 1; i++)
 			{
-				window[i] = new float[offset * 2 + 1];
-				window2[i] = new float[offset * 2 + 1];
-				window3[i] = new float[offset * 2 + 1];
-				window4[i] = new float[offset * 2 + 1];
+				window[i] = new double[offset * 2 + 1];
+				window2[i] = new double[offset * 2 + 1];
+				window3[i] = new double[offset * 2 + 1];
+				window4[i] = new double[offset * 2 + 1];
 				for (int j = 0; j < offset * 2 + 1; j++)
 				{
 					tp >> window[i][j];
@@ -126,10 +127,10 @@ public:
 	//Work as intended
 	void initalize_matrix(int offset)
 	{
-		window = new float*[offset * 2 + 1];
+		window = new double*[offset * 2 + 1];
 		for (int i = 0; i < offset * 2 + 1; i++)
 		{
-			window[i] = new float[offset * 2 + 1];
+			window[i] = new double[offset * 2 + 1];
 		}
 	}
 	//Work as intended
@@ -142,13 +143,20 @@ public:
 			for (int i = 0; i < layers - 1; i++)
 			{
 				tmp.clear();
-				for (int j = 0; j < neurons; j++)
+				if (i == 0)
 				{
-					if (i == 0)
+					for (int j = 0; j < neurons; j++)
 					{
+
 						tmp.push_back(new neuron(0.0f, 0));
 					}
-					else
+				}
+				else
+				{
+					int dana;
+					cout << "Podaj liczbe neuronow warstwy " + to_string(i) + "\n";
+					cin >> dana;
+					for (int j = 0; j < dana; j++)
 					{
 						tmp.push_back(new neuron(siec[i - 1], i));
 					}
@@ -163,7 +171,7 @@ public:
 		{
 			for (int i = 0; i < layers - 1; i++)
 			{
-				for (int j = 0; j < neurons; j++)
+				for (int j = 0; j < siec[i].size(); j++)
 				{
 					siec[i][j]->reset_weights(i);
 				}
@@ -172,7 +180,7 @@ public:
 		}
 	}
 	//Work as intended
-	void insert_data(int offset, float** matrix)
+	void insert_data(int offset, double** matrix)
 	{
 		int tmp = 0;
 		for (int i = 0; i < offset * 2 + 1; i++)
@@ -187,9 +195,11 @@ public:
 	}
 
 	//Sprawdzone teoretycznie - wszystko dobrze
-	void error_propagation(float expected_value)
+	void error_propagation(double expected_value)
 	{
 		siec[siec.size() - 1][0]->mistake = expected_value - siec[siec.size() - 1][0]->output;
+		if (siec[siec.size() - 1][0]->mistake == 0)
+			return;
 		//wybor warstwy (oprocz ostatniej) od tylu
 		for (int i = siec.size() - 2; i >= 0; i--)
 		{
@@ -199,7 +209,7 @@ public:
 			//wybor neuronu w warstwy kolejnej (i+1)
 			for (int j = 0; j<siec[i + 1].size(); j++)
 			{
-				/*float tmp = 0;
+				/*double tmp = 0;
 				for (int k = 0; k<siec[i+1][j]->weight.size(); k++)
 				{
 					tmp += siec[i+1][j]->weight[k];
@@ -216,10 +226,10 @@ public:
 			}
 		}
 		//na samym koncu przelicz nowe wagi dla warstwy pierwszej
-		for (int i = 0; i<siec[0].size(); i++)
+		/*for (int i = 0; i<siec[0].size(); i++)
 		{
 			siec[0][i]->weight_changer(u);
-		}
+		}*/
 	}
 	
 	void teach_network(int offset, int layers, int typ)
@@ -233,12 +243,17 @@ public:
 					continue;
 				one_set_iteration(offset, j);
 			}
+			ttp = 0;
+			ttn = 0;
+			tfp = 0;
+			tfn = 0;
+			one_set_iteration(offset, i,1);		
 			output_weights(offset, typ,i);
 		}		
 
 	}
 
-	void one_set_iteration(int offset, int k_set)
+	void one_set_iteration(int offset, int k_set, int typ = 0)
 	{
 		tp_cur = 0;
 		tn_cur = 0;
@@ -286,13 +301,23 @@ public:
 			//Przetwarzanie
 			calculate();
 			
-			cout << siec[siec.size() - 1][0]->output << "\t" << expected << "\t";
-			if (siec[siec.size() - 1][0]->output*expected > 0)
-				cout << "TRUE\n";
+			if (typ != 0)
+			{
+				if (expected > 0)
+					if (siec[siec.size() - 1][0]->output > 0)
+						ttp++;
+					else
+						tfn++;
+				else
+					if (siec[siec.size() - 1][0]->output < 0)
+						ttn++;
+					else
+						tfp++;
+			}
 			else
-				cout << "FALSE\n";
-			//Propagacja b³êdu	
-			error_propagation(expected);
+				//Propagacja b³êdu	
+				error_propagation(expected);
+			cout << siec[siec.size() - 1][0]->output << "\t\t" << expected << "\n";
 		}
 	}
 
@@ -311,6 +336,7 @@ public:
 	{
 		ofstream test;
 		string a;
+		string b;
 		switch (typ)
 		{
 		case 1:
@@ -352,6 +378,9 @@ public:
 		}
 		char* path = new char[a.size() + 1];
 		strcpy(path, a.c_str());
+		b = "wyniki/" + a;
+		char* path2 = new char[b.size() + 1];
+		strcpy(path2, b.c_str());
 		test.open(path, fstream::app);
 		for (int i = 0; i < siec.size(); i++)
 		{
@@ -361,12 +390,16 @@ public:
 					test << siec[i][j]->weight[0] << "\t" << siec[i][j]->base_weight << "\n";
 				else
 				{
-					for (int k = 0;k < (offset*2+1)*(offset*2+1);k++)
+					for (int k = 0;k < siec[i-1].size();k++)
 						test << siec[i][j]->weight[k] << "\t";
 					test << siec[i][j]->base_weight << "\n";
 				}
 			}
 		}
+		test.close();
+		test.open(path2, fstream::app);
+		test << "True positive: " << ttp << "\t" << "False positive: " << tfp << "\n";
+		test << "False negative: " << tfn << "\t" << "True negative: " << ttn;
 		test.close();
 	}
 
