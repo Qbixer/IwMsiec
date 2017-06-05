@@ -1,7 +1,6 @@
 #pragma once
 #include <complex>
 #include <vector>
-#include <iostream>
 
 using namespace std;
 class neuron

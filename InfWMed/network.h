@@ -137,7 +137,7 @@ public:
 	void create_new_web(int offset, int layers)
 	{
 		int neurons = (2*offset+1)*(2*offset+1);
-		std::vector<neuron*> tmp = std::vector<neuron*>();
+		vector<neuron*> tmp = std::vector<neuron*>();
 		if (siec.size() == 0)
 		{
 			for (int i = 0; i < layers - 1; i++)

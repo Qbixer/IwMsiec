@@ -2,8 +2,6 @@
 #include <stdio.h>
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_image.h>
-#include <allegro5/allegro_primitives.h>
-#include <iostream>
 #include <fstream>
 #include <string>
 #include "network.h"

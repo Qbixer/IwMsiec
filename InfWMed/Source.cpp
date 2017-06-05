@@ -3,6 +3,8 @@
 #include "network.h"
 #include <iostream>
 #include "input.h"
+#include <allegro5/allegro_primitives.h>
+#include "generator.h"
 
 using namespace std;
 int main()
@@ -23,6 +25,9 @@ int main()
 			int offset;
 			cout << "Podaj offset\n";
 			cin >> offset;
+			generator *gen = new generator(offset, 100);
+			gen->open_text("test");
+
 			input *in = new input(offset);
 			int typ;
 			cout << "1 - healthy\n2 - glaucoma\n3 - diabetic_retinopathy\n4 - test\n";
@@ -92,9 +97,9 @@ int main()
 				}
 				case 4:
 					{
-					a += "test/01_o.jpg";
-					b += "test/01_e.jpg";
-					c += "test/01_m.jpg";
+					a += "test/01_o.png";
+					b += "test/01_e.png";
+					c += "test/01_m.png";
 					break;
 					}
 				}		
@@ -105,8 +110,16 @@ int main()
 				char* image_mask = new char[c.size() + 1];
 				strcpy(image_mask, c.c_str());
 				cout << "Przetwarzanie:" << i << "\n";
-				in->do_stuff(image, image_good, image_mask,typ);
+				gen->open_graphics(image, image_good, image_mask);
+				gen->initiate_matrix();
+				gen->destroy_graphics();
+				gen->generate_data();
+				gen->delete_matrices();
+				
+
+				//in->do_stuff(image, image_good, image_mask,typ);
 			}
+			gen->close_file();
 			break;
 		}
 		case 2:
@@ -220,9 +233,9 @@ int main()
 			}
 			case 4:
 			{
-				a += "test/01_o.jpg";
-				b += "test/01_e.jpg";
-				c += "test/01_m.jpg";
+				a += "test/01_o.png";
+				b += "test/01_e.png";
+				c += "test/01_m.png";
 				break;
 			}
 			}
@@ -234,6 +247,11 @@ int main()
 			char* image_mask = new char[c.size() + 1];
 			strcpy(image_mask, c.c_str());
 			in->do_stuff3(image, image_good, image_mask, typ,layers);
+			break;
+		}
+		case 5:
+		{
+
 			break;
 		}
 		case 9:
