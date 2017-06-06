@@ -15,7 +15,6 @@ public:
 	int input_size;
 	double mistake = 0;
 	double weight_sum;
-	//0 - wejscie, inne = i
 	int layer;
 
 	neuron(double input_value, int layer)

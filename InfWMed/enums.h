@@ -8,5 +8,11 @@ enum type_of_matrix
 	mask_type = 2
 };
 
+enum type_of_set
+{
+	learning_set = 0,
+	test_set
+};
+
 
 #endif

@@ -342,7 +342,7 @@ public:
 				c += "stats.txt";
 				a += to_string(i);
 				b = a;
-				a += "_t.txt";
+				a += ".txt";
 				b += "_t.png";
 				break;
 			}

@@ -39,7 +39,7 @@ double generator::get_value_from_pixel(int i, int j, type_of_matrix typ)
 	}
 	if(typ == expected_type)
 	{
-		return al_get_pixel(image_expected, i, j).b * 2 - 1;
+		return al_get_pixel(image_expected, i, j).b;
 	}
 	if(typ == mask_type)
 	{
@@ -127,6 +127,7 @@ void generator::open_text(std::string folder)
 {
 	folder.append("/");
 	folder.append(std::to_string(offset));
+	folder.append("_");
 
 	std::string tmp = folder;
 	tmp.append("tp.txt");
@@ -181,96 +182,124 @@ bool generator::take_random_window()
 		return false;
 	int x = rand() % width;
 	int y = rand() % height;
+	int near_offset = 1;
 	if (matrix_mask[x][y] == 1)
 	{
-		for (int i = -offset; i <= offset; i++)
+		if (offset == 0)
 		{
-			for (int j = -offset; j <= offset; j++)
+			if (matrix_expected[x][y] > 0.5 && itp == set_size && ipnn < set_size)
 			{
-				window[i + offset][j + offset] = matrix[x + offset + i][y + offset + j];
+				ipnn++;
+				pnn << matrix[x][y] << "\n\n";
 			}
-		}
-
-
-		if (matrix_expected[x][y] > 0.5f && ipnn + itp<set_size * 2)
-		{
-			for (int i = -1; i <= 1; i++)
+			if (matrix_expected[x][y] > 0.5 && itp < set_size)
 			{
-				for (int j = -1; j <= 1; j++)
+				itp++;
+				tp << matrix[x][y] << "\n\n";
+			}			
+			if (matrix_expected[x][y] < 0.5 && itp == set_size && innp < set_size)
+			{
+				innp++;
+				nnp << matrix[x][y] << "\n\n";
+			}
+			if (matrix_expected[x][y] < 0.5 && itn < set_size)
+			{
+				itn++;
+				tn << matrix[x][y] << "\n\n";
+			}			
+			return true;
+		}
+		else
+		{
+			for (int i = -offset; i <= offset; i++)
+			{
+				for (int j = -offset; j <= offset; j++)
 				{
-					if (y + j < 0 || x + i < 0 || x + i >= width || y + j >= height)
-						continue;
-					if (matrix_expected[x + i][y + j] < 0.5f && ipnn<set_size)
+					window[i + offset][j + offset] = matrix[x + offset + i][y + offset + j];
+				}
+			}
+
+
+			if (matrix_expected[x][y] > 0.5 && ipnn + itp < set_size * 2)
+			{
+				for (int i = -near_offset; i <= near_offset; i++)
+				{
+					for (int j = -near_offset; j <= near_offset; j++)
 					{
-						for (int k = -offset; k <= offset; k++)
+						if (y + j < 0 || x + i < 0 || x + i >= width || y + j >= height)
+							continue;
+						if (matrix_expected[x + i][y + j] < 0.5 && ipnn < set_size)
 						{
-							for (int l = -offset; l <= offset; l++)
+							for (int k = -offset; k <= offset; k++)
 							{
-								pnn << window[k + offset][l + offset] << "\t";
+								for (int l = -offset; l <= offset; l++)
+								{
+									pnn << window[k + offset][l + offset] << "\t";
+								}
+								pnn << "\n";
 							}
 							pnn << "\n";
+							ipnn++;
+							return true;
 						}
-						pnn << "\n";
-						ipnn++;
-						return true;
 					}
 				}
-			}
-			if (itp<set_size)
-			{
-				for (int i = -offset; i <= offset; i++)
+				if (itp < set_size)
 				{
-					for (int j = -offset; j <= offset; j++)
+					for (int i = -offset; i <= offset; i++)
 					{
-						tp << window[i + offset][j + offset] << "\t";
+						for (int j = -offset; j <= offset; j++)
+						{
+							tp << window[i + offset][j + offset] << "\t";
+						}
+						tp << "\n";
 					}
 					tp << "\n";
+					itp++;
+					return true;
 				}
-				tp << "\n";
-				itp++;
-				return true;
 			}
-		}
-		else if (matrix_expected[x][y] < 0.5f && innp + itn < set_size * 2)
-		{
-
-			for (int i = -1; i <= 1; i++)
+			else if (matrix_expected[x][y] < 0.5 && innp + itn < set_size * 2)
 			{
-				for (int j = -1; j <= 1; j++)
+
+				for (int i = -near_offset; i <= near_offset; i++)
 				{
-					if (y + j < 0 || x + i < 0 || x + i >= width || y + j >= height)
-						continue;
-					if (matrix_expected[x + i][y + j] > 0.5f && innp<set_size)
+					for (int j = -near_offset; j <= near_offset; j++)
 					{
-						for (int k = -offset; k <= offset; k++)
+						if (y + j < 0 || x + i < 0 || x + i >= width || y + j >= height)
+							continue;
+						if (matrix_expected[x + i][y + j] > 0.5 && innp < set_size)
 						{
-							for (int l = -offset; l <= offset; l++)
+							for (int k = -offset; k <= offset; k++)
 							{
-								nnp << window[k + offset][l + offset] << "\t";
+								for (int l = -offset; l <= offset; l++)
+								{
+									nnp << window[k + offset][l + offset] << "\t";
+								}
+								nnp << "\n";
 							}
 							nnp << "\n";
+							innp++;
+							return true;
 						}
-						nnp << "\n";
-						innp++;
-						return true;
 					}
 				}
-			}
-			if (itn<set_size)
-			{
-				for (int i = -offset; i <= offset; i++)
+				if (itn < set_size)
 				{
-					for (int j = -offset; j <= offset; j++)
+					for (int i = -offset; i <= offset; i++)
 					{
-						tn << window[i + offset][j + offset] << "\t";
+						for (int j = -offset; j <= offset; j++)
+						{
+							tn << window[i + offset][j + offset] << "\t";
+						}
+						tn << "\n";
 					}
 					tn << "\n";
+					itn++;
+					return true;
 				}
-				tn << "\n";
-				itn++;
-				return true;
-			}
 
+			}
 		}
 	}
 	return true;

@@ -5,6 +5,8 @@
 #include "input.h"
 #include <allegro5/allegro_primitives.h>
 #include "generator.h"
+#include "bad_thing.h"
+#include "network_reworked.h"
 
 using namespace std;
 int main()
@@ -22,13 +24,16 @@ int main()
 		{
 		case 1:
 		{
-			int offset;
+			int offset,set_size;
+			string folder;
 			cout << "Podaj offset\n";
 			cin >> offset;
-			generator *gen = new generator(offset, 100);
-			gen->open_text("test");
-
-			input *in = new input(offset);
+			cout << "Podaj ilosc probek z jednego zdjecia\n";
+			cin >> set_size;
+			generator *gen = new generator(offset, set_size);
+			cout << "Do jakiego folderu zapisac wynik?\n";
+			cin >> folder;
+			gen->open_text(folder);
 			int typ;
 			cout << "1 - healthy\n2 - glaucoma\n3 - diabetic_retinopathy\n4 - test\n";
 			cin >> typ;
@@ -36,73 +41,7 @@ int main()
 			for (int i = 1;i <= 1;i++)
 			{	
 				string a,b,c;
-				switch (typ)
-				{
-				case 1:
-				{
-					a += "healthy/";
-					b += "healthy/a/";
-					c += "healthy/a/";
-					if (i < 10)
-					{
-						a += "0";
-						b += "0";
-						c += "0";
-					}
-					a += to_string(i);
-					b += to_string(i);
-					c += to_string(i);
-					a += "_h.jpg";
-					b += "_h.jpg";
-					c += "_h_mask.jpg";
-					break;
-				}
-				case 2:
-				{
-					a += "glaucoma/";
-					b += "glaucoma/a/";
-					c += "glaucoma/a/";
-					if (i < 10)
-					{
-						a += "0";
-						b += "0";
-						c += "0";
-					}
-					a += to_string(i);
-					b += to_string(i);
-					c += to_string(i);
-					a += "_g.jpg";
-					b += "_g.jpg";
-					c += "_g_mask.jpg";
-					break;
-				}
-				case 3:
-				{
-					a += "diabetic_retinopathy/";
-					b += "diabetic_retinopathy/a/";
-					c += "diabetic_retinopathy/a/";
-					if (i < 10)
-					{
-						a += "0";
-						b += "0";
-						c += "0";
-					}
-					a += to_string(i);
-					b += to_string(i);
-					c += to_string(i);
-					a += "_dr.jpg";
-					b += "_dr.jpg";
-					c += "_dr_mask.jpg";
-					break;
-				}
-				case 4:
-					{
-					a += "test/01_o.png";
-					b += "test/01_e.png";
-					c += "test/01_m.png";
-					break;
-					}
-				}		
+				wybor(a, b, c, typ, i);
 				char* image = new char[a.size() + 1];
 				strcpy(image, a.c_str());
 				char* image_good = new char[b.size() + 1];
@@ -124,7 +63,7 @@ int main()
 		}
 		case 2:
 		{
-			int offset,layers,ptp,ptn,ppnn,pnnp,typ;
+			int offset,layers,ptp,ptn,ppnn,pnnp;
 			double u;
 			cout << "Podaj offset\n";
 			cin >> offset;
@@ -134,14 +73,21 @@ int main()
 			cin >> layers;
 			cout << "Podaj relatywne wielkosci zbiorow: tp, tn, pnn, nnp\n";
 			cin >> ptp >> ptn >> ppnn >> pnnp;
-			cout << "1 - healthy\n2 - glaucoma\n3 - diabetic_retinopathy\n4 - test\n";
-			cin >> typ;
-			network(offset, u,layers,typ,ptp,ptn,ppnn,pnnp);
+			layers++;
+			string folder;
+			cout << "Podaj folder docelowy\n";
+			cin >> folder;
+			network_reworked *net = new network_reworked(offset, u);
+			net->initalize_matrix();
+			net->open_text(folder);
+			net->load_vectors(ptp, ptn, ppnn, pnnp);
+			net->teach_network(layers, folder);
+			net->delete_matrix();
 			break;
 		}
 		case 3:
 		{
-			int offset, typ, layers,k_set;
+			int offset, typ, layers;
 			string obraz;
 			cout << "Podaj offset\n";
 			cin >> offset;
@@ -172,73 +118,7 @@ int main()
 			cout << "Podaj ktore zdjecie\n";
 			cin >> i;			
 			string a, b, c;
-			switch (typ)
-			{
-			case 1:
-			{
-				a += "healthy/";
-				b += "healthy/a/";
-				c += "healthy/a/";
-				if (i < 10)
-				{
-					a += "0";
-					b += "0";
-					c += "0";
-				}
-				a += to_string(i);
-				b += to_string(i);
-				c += to_string(i);
-				a += "_h.jpg";
-				b += "_h.jpg";
-				c += "_h_mask.jpg";
-				break;
-			}
-			case 2:
-			{
-				a += "glaucoma/";
-				b += "glaucoma/a/";
-				c += "glaucoma/a/";
-				if (i < 10)
-				{
-					a += "0";
-					b += "0";
-					c += "0";
-				}
-				a += to_string(i);
-				b += to_string(i);
-				c += to_string(i);
-				a += "_g.jpg";
-				b += "_g.jpg";
-				c += "_g_mask.jpg";
-				break;
-			}
-			case 3:
-			{
-				a += "diabetic_retinopathy/";
-				b += "diabetic_retinopathy/a/";
-				c += "diabetic_retinopathy/a/";
-				if (i < 10)
-				{
-					a += "0";
-					b += "0";
-					c += "0";
-				}
-				a += to_string(i);
-				b += to_string(i);
-				c += to_string(i);
-				a += "_dr.jpg";
-				b += "_dr.jpg";
-				c += "_dr_mask.jpg";
-				break;
-			}
-			case 4:
-			{
-				a += "test/01_o.png";
-				b += "test/01_e.png";
-				c += "test/01_m.png";
-				break;
-			}
-			}
+			wybor(a, b, c, typ, i);
 			input *in = new input(offset);
 			char* image = new char[a.size() + 1];
 			strcpy(image, a.c_str());
