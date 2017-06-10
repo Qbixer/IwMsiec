@@ -11,29 +11,33 @@ class network_reworked
 {
 public:
 	network_reworked(int offset, double u);
+	network_reworked(int offset);
 	void initalize_matrix();
 	void delete_matrix();
 	void open_text(std::string folder);
 	void load_vectors(double tp_prop, double tn_prop, double pnn_prop, double nnp_prop);
 	void teach_network(int layers, std::string folder);
-	
-
-
-	std::vector<std::vector<neuron_reworked*>> siec;
-private:
 	void create_new_web(int layers);
-	void one_set_iteration(int k_set, type_of_set type);
-	void insert_data(double** matrix);
 	void calculate();
+	void insert_data(double** matrix);
+
+	
+	std::vector<std::vector<neuron_reworked*>> siec;
+	const static int max_set_count = 10;
+private:
+	
+	void one_set_iteration(int k_set, type_of_set type);
+	
+	
 	void error_propagation(double expected_value);
 	void open_text_weights(int i, std::string folder);
 	void output_weights(int k_set, std::string folder);
 
-	const static int max_set_count = 10;
+	
 
 	double u;
+	
 	int offset;
-
 	double ** window;
 
 	std::ifstream tp,tn,pnn,nnp;;

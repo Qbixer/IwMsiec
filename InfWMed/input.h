@@ -230,9 +230,25 @@ public:
 		}
 		al_save_bitmap("test/bit3.jpg", bit3);
 	}
+	
+	void prepare_picture(double min, double max)
+	{
+		double gap = max - min;
+		for (int i = 0; i < width; i++)
+		{
+			for (int j = 0; j < height; j++)
+			{
+				if (matrix_mask[i][j] > 0)
+				{
+					matrix[i + offset][j + offset] = (matrix[i + offset][j + offset] - min) / gap * 2 - 1;
+				}
+			}
+		}
+	}
 	//Work as intended
 	void initiate_matrix(int typ = 0)
 	{
+		double min = 2, max_value = -2;
 		matrix = new double*[width + 2 * offset];
 		al_lock_bitmap(image, al_get_bitmap_format(image), ALLEGRO_LOCK_READONLY);
 		for (int i = 0; i < width + 2 * offset; i++)
@@ -247,7 +263,11 @@ public:
 					//matrix[i][j] = (al_get_pixel(image, i - offset, j - offset).r + al_get_pixel(image, i - offset, j - offset).g + al_get_pixel(image, i - offset, j - offset).b) / 3.0;
 					matrix[i][j] = ((al_get_pixel(image, i - offset, j - offset).r + al_get_pixel(image, i - offset, j - offset).g + al_get_pixel(image, i - offset, j - offset).b) / 3.0)*2-1;
 				else
-					matrix[i][j] = 0;
+					matrix[i][j] = -1;
+				if (matrix[i][j] > max_value)
+					max_value = matrix[i][j];
+				if (matrix[i][j] > -0.99 && matrix[i][j] < min)
+					min = matrix[i][j];
 			}
 		}
 		if (typ == 0) {
@@ -278,6 +298,7 @@ public:
 			{
 				window[i] = new double[offset * 2 + 1];
 			}
+			prepare_picture(min, max_value);
 		
 	}
 
@@ -391,6 +412,12 @@ public:
 			test2 << i << "\n";
 			test2 << "True positive: " << ttp << "\t" << "False positive: " << tfp << "\n";
 			test2 << "False negative: " << tfn << "\t" << "True negative: " << ttn << "\n";
+			double acc = (ttp + ttn) / (ttp + ttn + tfp + tfn);
+			double pre = ttp / (ttp + tfp);
+			double sens = ttp / (ttp + tfn);
+			test2 << "ACC: " << acc << "\n";
+			test2 << "Precision: " << pre << "\n";
+			test2 << "Sensitivity: " << sens << "\n";
 			test2 << "MSE: " << sqrt(mse) << "\n";
 			test2.close();
 		}

@@ -7,6 +7,7 @@
 #include "generator.h"
 #include "bad_thing.h"
 #include "network_reworked.h"
+#include <windows.h>
 
 using namespace std;
 int main()
@@ -18,7 +19,9 @@ int main()
 	bool loop = true;
 	while (loop)
 	{
-		cout << "\n\n1 - Generowanie danych z obrazkow\n2 - Utowrzenie sieci\n3 - Testowanie sieci zbudowanej (losowy obraz)\n4 - Testowanie sieci zbudowanej (ze statystykami)\n9 - Wyjscie\n";
+		Beep(1000, 1000);
+		cout << '\a';
+		cout << "\n\n1 - Generowanie danych z obrazkow\n2 - Utowrzenie sieci\n3 - Testowanie sieci zbudowanej (ze statystykami)\n9 - Wyjscie\n";
 		cin >> opcja;
 		switch (opcja)
 		{
@@ -38,7 +41,7 @@ int main()
 			cout << "1 - healthy\n2 - glaucoma\n3 - diabetic_retinopathy\n4 - test\n";
 			cin >> typ;
 			//Zmienic
-			for (int i = 1;i <= 1;i++)
+			for (int i = 1;i <= 10;i++)
 			{	
 				string a,b,c;
 				wybor(a, b, c, typ, i);
@@ -87,32 +90,13 @@ int main()
 		}
 		case 3:
 		{
-			int offset, typ, layers;
-			string obraz;
-			cout << "Podaj offset\n";
-			cin >> offset;
-			cout << "1 - healthy\n2 - glaucoma\n3 - diabetic_retinopathy\n4 - test\n";
-			cin >> typ;
-			cout << "Podaj ilosc warstw\n";
-			cin >> layers;
-			cout << "Podaj obraz do przetworzenia\n";
-			cin >> obraz;
-			char* path = new char[obraz.size() + 1];
-			strcpy(path, obraz.c_str());
-			cout << "Podaj obraz do zapisu\n";
-			cin >> obraz;
-			input *in = new input(offset);
-			in->do_stuff2(path,obraz, typ, layers,0);
-			break;
-		}
-		case 4:
-		{
 			int offset, typ, layers,i;
 			string obraz;
 			cout << "Podaj offset\n";
 			cin >> offset;
 			cout << "Podaj ilosc warstw\n";
 			cin >> layers;
+			layers++;
 			cout << "1 - healthy\n2 - glaucoma\n3 - diabetic_retinopathy\n4 - test\n";
 			cin >> typ;
 			cout << "Podaj ktore zdjecie\n";
@@ -126,12 +110,17 @@ int main()
 			strcpy(image_good, b.c_str());
 			char* image_mask = new char[c.size() + 1];
 			strcpy(image_mask, c.c_str());
-			in->do_stuff3(image, image_good, image_mask, typ,layers);
-			break;
-		}
-		case 5:
-		{
+			string folder;
+			cout << "Podaj folder docelowy\n";
+			cin >> folder;
+			generator *gen = new generator(offset,folder);
+			gen->open_graphics(image, image_good, image_mask);
+			gen->initiate_matrix();
+			gen->net = new network_reworked(offset);
+			gen->net->create_new_web(layers);
 
+			gen->generate_pictures(folder);
+			//in->do_stuff3(image, image_good, image_mask, typ,layers);
 			break;
 		}
 		case 9:
@@ -146,22 +135,4 @@ int main()
 		}
 		}
 	}
-	/*network * siec = new network(5, 0.2, "test.bmp", "test.bmp", "test.bmp",4);
-	siec->one_iteration_matrix(false);
-	ALLEGRO_DISPLAY* display = NULL;
-	display = al_create_display(siec->in->width,siec->in->height);
-	al_set_target_bitmap(al_get_backbuffer(display));
-	al_clear_to_color(al_map_rgb(0, 0, 0));
-	siec->one_iteration_matrix(true);
-	for (int i = 0; i < siec->in->width;i++)
-	{
-		for (int j = 0; j < siec->in->height; j++)
-		{
-			al_draw_pixel(j + 1, i + 1, al_map_rgb(siec->matrix_expected[j][i], siec->matrix_expected[j][i], siec->matrix_expected[j][i]));
-		}
-	}
-	al_flip_display();
-	system("pause");
-	*/
-
 }

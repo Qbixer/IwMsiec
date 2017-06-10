@@ -342,3 +342,9 @@ network_reworked::network_reworked(int offset, double u)
 	this->offset = offset;
 	this->u = u;
 }
+
+network_reworked::network_reworked(int offset)
+{
+	this->offset = offset;
+}
+

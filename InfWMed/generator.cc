@@ -2,12 +2,166 @@
 #include <allegro5/bitmap_io.h>
 #include <iostream>
 #include <allegro5/bitmap_lock.h>
+#include <allegro5/shader.h>
+#include <allegro5/allegro.h>
 
 generator::generator(int offset, int set_size)
 {
 	this->offset = offset;
 	this->set_size = set_size;
 	sum = 4 * set_size;
+}
+
+generator::generator(int offset, std::string folder)
+{
+	this->offset = offset;
+	folder = "obrazy/" + folder;	
+	folder.append("/");
+	folder.append(std::to_string(offset));
+	folder.append("_stats.txt");
+	char* file = new char[folder.size() + 1];
+	strcpy(file, folder.c_str());
+	stats.open(file, std::fstream::trunc);
+	delete[] file;	
+}
+
+
+
+
+bool generator::take_new_window(network_reworked* net, ALLEGRO_BITMAP* display)
+{
+	//gdy x jest juz za duzy
+	if (cur_x >= width)
+	{
+		cur_x = 0;
+		cur_y++;
+	}
+	//gdy y jest za duzy - blad
+	if (cur_y >= height)
+	{
+		cur_x = 0;
+		cur_y = 0;
+		return false;
+	}
+	if (matrix_mask[cur_x][cur_y] == 0)
+	{
+		cur_x++;
+		return true;
+	}
+
+	//okno jest od -offset - 0 (srodek badany) - offset
+	for (int i = -offset; i <= offset; i++)
+	{
+		for (int j = -offset; j <= offset; j++)
+		{
+			window[i + offset][j + offset] = matrix[cur_x + offset + i][cur_y + offset + j];
+		}
+	}
+	net->insert_data(window);
+	net->calculate();
+	if (net->siec[net->siec.size() - 1][0]->output < 0)
+		al_draw_pixel(cur_x, cur_y, al_map_rgb(0, 0, 0));
+	else
+		al_draw_pixel(cur_x, cur_y, al_map_rgb(255, 255, 255));
+
+	if (matrix_expected[cur_x][cur_y] > 0.5)
+		if (net->siec[net->siec.size() - 1][0]->output > 0)
+			ttp++;
+		else
+			tfp++;
+	else
+		if (net->siec[net->siec.size() - 1][0]->output < 0)
+			ttn++;
+		else
+			tfn++;
+	if (net->siec[net->siec.size() - 1][0]->output > 0)
+		mse += (1 - matrix_expected[cur_x][cur_y])*(1 - matrix_expected[cur_x][cur_y]);
+	else
+		mse += (0 - matrix_expected[cur_x][cur_y])*(0 - matrix_expected[cur_x][cur_y]);
+
+
+	cur_x++;
+	return true;
+}
+
+void generator::generate_pictures(std::string folder)
+{
+	for (int i = 0;i < network_reworked::max_set_count;i++)
+	{
+		std::cout << "Przetwarzanie:" << i << "\n";
+		input_weights(folder, i);
+		std::string pom = "obrazy/" + folder;
+		pom.append("/");
+		pom.append(std::to_string(offset));
+		pom.append("_");
+		pom.append(std::to_string(i));
+		pom.append(".png");
+		ALLEGRO_BITMAP* display = NULL;
+		display = al_create_bitmap(width, height);
+		al_set_target_bitmap(display);
+		al_clear_to_color(al_map_rgb(0, 0, 0));
+		ttp = 0;
+		ttn = 0;
+		tfp = 0;
+		tfn = 0;
+		mse = 0;
+		while (take_new_window(net, display));
+		char* path = new char[pom.size() + 1];
+		strcpy(path, pom.c_str());
+		al_save_bitmap(path, display);
+		stats << i << "\n";
+		stats << "True positive: " << ttp << "\t" << "False positive: " << tfp << "\n";
+		stats << "False negative: " << tfn << "\t" << "True negative: " << ttn << "\n";
+		double acc = double(ttp + ttn) / double(ttp + ttn + tfp + tfn);
+		double pre = double(ttp) / double(ttp + tfp);
+		double sens = double(ttp) / double(ttp + tfn);
+		stats << "ACC: " << acc << "\n";
+		stats << "Precision: " << pre << "\n";
+		stats << "Sensitivity: " << sens << "\n";
+		stats << "MSE: " << sqrt(mse) << "\n";	
+	}
+	stats.close();
+}
+
+void generator::input_weights(std::string folder, int i)
+{
+	std::ifstream text_weights;
+	folder.append("/");
+	folder.append(std::to_string(offset));
+	folder.append("_");
+	folder.append(std::to_string(i));
+	folder.append(".txt");
+
+	char* path = new char[folder.size() + 1];
+	strcpy(path, folder.c_str());
+	text_weights.open(path, std::fstream::in);
+
+	std::vector<double> tmp;
+	double pom, base;
+	for (int i = 0;i < net->siec.size();i++)
+	{
+		for (int j = 0;j < net->siec[i].size();j++)
+		{
+			tmp.clear();
+			if (i == 0)
+			{
+				text_weights >> pom;				
+				tmp.push_back(pom);
+			}
+			else
+			{
+				for (int k = 0;k < net->siec[i - 1].size();k++)
+				{
+					text_weights >> pom;
+					tmp.push_back(pom);
+				}
+				
+			}
+			text_weights >> base;
+			net->siec[i][j]->input_weight(tmp, base);
+		}
+	}
+	text_weights.close();
 }
 
 void generator::open_graphics(char* filename, char* filename_expected, char* filename_mask)
@@ -45,6 +199,38 @@ double generator::get_value_from_pixel(int i, int j, type_of_matrix typ)
 	{
 		return al_get_pixel(image_mask, i, j).b;
 	}
+}
+
+void generator::prepare_picture()
+{
+	double min = 2, max = -2;
+	for (int i = 0; i < width; i++)
+	{
+		for (int j = 0; j < height; j++)
+		{
+			if (matrix_mask[i][j] > 0.5)
+			{
+				if (matrix[i+offset][j+ offset]  > max)
+					max = matrix[i][j];
+				if (matrix[i+ offset][j+ offset]  < min)
+					min = matrix[i][j];
+			}
+		}
+	}
+	min = -0.5;
+	max = 0;
+	double gap = max - min;
+	for (int i = 0; i < width; i++)
+	{
+		for (int j = 0; j < height; j++)
+		{
+			if (matrix_mask[i][j] > 0.5)
+			{
+				matrix[i + offset][j + offset] = (matrix[i + offset][j + offset] - min) / gap * 2 - 1;
+			}
+		}
+	}
+
 }
 
 void generator::initiate_matrix()
@@ -87,6 +273,8 @@ void generator::initiate_matrix()
 	{
 		window[i] = new double[offset * 2 + 1];
 	}
+
+	prepare_picture();
 }
 
 void generator::destroy_graphics()

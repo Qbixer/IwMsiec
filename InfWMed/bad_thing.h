@@ -37,9 +37,9 @@ void wybor(std::string &a, std::string &b, std::string &c, int typ, int i)
 		a += std::to_string(i);
 		b += std::to_string(i);
 		c += std::to_string(i);
-		a += "_g.jpg";
-		b += "_g.jpg";
-		c += "_g_mask.jpg";
+		a += "_g.png";
+		b += "_g.png";
+		c += "_g_mask.png";
 		break;
 	}
 	case 3:
@@ -56,16 +56,28 @@ void wybor(std::string &a, std::string &b, std::string &c, int typ, int i)
 		a += std::to_string(i);
 		b += std::to_string(i);
 		c += std::to_string(i);
-		a += "_dr.jpg";
-		b += "_dr.jpg";
-		c += "_dr_mask.jpg";
+		a += "_dr.png";
+		b += "_dr.png";
+		c += "_dr_mask.png";
 		break;
 	}
 	case 4:
 	{
-		a += "test/01_o.png";
-		b += "test/01_e.png";
-		c += "test/01_m.png";
+		a += "test/";
+		b += "test/";
+		c += "test/";
+		if (i < 10)
+		{
+			a += "0";
+			b += "0";
+			c += "0";
+		}
+		a += std::to_string(i);
+		b += std::to_string(i);
+		c += std::to_string(i);
+		a += "_o.png";
+		b += "_e.png";
+		c += "_m.png";
 		break;
 	}
 	}
