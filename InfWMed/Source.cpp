@@ -40,7 +40,7 @@ int main()
 			int typ;
 			cout << "1 - healthy\n2 - glaucoma\n3 - diabetic_retinopathy\n4 - test\n";
 			cin >> typ;
-			cout << "Ile zdjêæ?\n";
+			cout << "Ile zdjec?\n";
 			cin >> times;
 			//Zmienic
 			for (int i = 1;i <= times;i++)

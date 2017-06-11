@@ -27,7 +27,7 @@ int main()
 		{
 		case 1:
 		{
-			int offset,set_size;
+			int offset,set_size,times;
 			string folder;
 			cout << "Podaj offset\n";
 			cin >> offset;
@@ -40,8 +40,10 @@ int main()
 			int typ;
 			cout << "1 - healthy\n2 - glaucoma\n3 - diabetic_retinopathy\n4 - test\n";
 			cin >> typ;
+			cout << "Ile zdjêæ?\n";
+			cin >> times;
 			//Zmienic
-			for (int i = 1;i <= 15;i++)
+			for (int i = 1;i <= times;i++)
 			{	
 				string a,b,c;
 				wybor(a, b, c, typ, i);
