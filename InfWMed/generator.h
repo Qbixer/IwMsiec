@@ -31,6 +31,7 @@ private:
 	bool take_new_window(network_reworked * net, ALLEGRO_BITMAP* display);
 	void input_weights(std::string folder, int i);
 	void prepare_picture();
+	void generator::draw_pixel();
 
 	ALLEGRO_BITMAP *image = nullptr;
 	ALLEGRO_BITMAP *image_expected = nullptr;

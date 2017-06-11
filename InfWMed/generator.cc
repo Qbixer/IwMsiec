@@ -27,6 +27,23 @@ generator::generator(int offset, std::string folder)
 
 
 
+void generator::draw_pixel()
+{
+	if (net->siec[net->siec.size() - 1][0]->output < 0)
+	{
+		if (matrix_expected[cur_x][cur_y] < 0.5)
+			al_draw_pixel(cur_x, cur_y, al_map_rgb(0, 0, 0));
+		else
+			al_draw_pixel(cur_x, cur_y, al_map_rgb(0, 0, 0));
+	}
+	else
+	{
+		if (matrix_expected[cur_x][cur_y] > 0.5)
+			al_draw_pixel(cur_x, cur_y, al_map_rgb(0, 255, 0));
+		else
+			al_draw_pixel(cur_x, cur_y, al_map_rgb(0, 255, 0));
+	}
+}
 
 bool generator::take_new_window(network_reworked* net, ALLEGRO_BITMAP* display)
 {
@@ -59,10 +76,7 @@ bool generator::take_new_window(network_reworked* net, ALLEGRO_BITMAP* display)
 	}
 	net->insert_data(window);
 	net->calculate();
-	if (net->siec[net->siec.size() - 1][0]->output < 0)
-		al_draw_pixel(cur_x, cur_y, al_map_rgb(0, 0, 0));
-	else
-		al_draw_pixel(cur_x, cur_y, al_map_rgb(255, 255, 255));
+	draw_pixel();
 
 	if (matrix_expected[cur_x][cur_y] > 0.5)
 		if (net->siec[net->siec.size() - 1][0]->output > 0)
@@ -96,9 +110,12 @@ void generator::generate_pictures(std::string folder)
 		pom.append("_");
 		pom.append(std::to_string(i));
 		pom.append(".png");
-		ALLEGRO_BITMAP* display = NULL;
-		display = al_create_bitmap(width, height);
+		ALLEGRO_BITMAP* display = al_create_bitmap(width, height);
 		al_set_target_bitmap(display);
+		al_clear_to_color(al_map_rgb(0, 0, 0));
+		al_draw_bitmap(image, 0, 0, NULL);
+		ALLEGRO_BITMAP* mask = al_create_bitmap(width, height);
+		al_set_target_bitmap(mask);
 		al_clear_to_color(al_map_rgb(0, 0, 0));
 		ttp = 0;
 		ttn = 0;
@@ -108,6 +125,8 @@ void generator::generate_pictures(std::string folder)
 		while (take_new_window(net, display));
 		char* path = new char[pom.size() + 1];
 		strcpy(path, pom.c_str());
+		al_set_target_bitmap(display);
+		al_draw_tinted_bitmap(mask, al_map_rgba_f(1, 1, 1, 0.1), 0, 0, 0);
 		al_save_bitmap(path, display);
 		stats << i << "\n";
 		stats << "True positive: " << ttp << "\t" << "False positive: " << tfp << "\n";
@@ -204,19 +223,19 @@ double generator::get_value_from_pixel(int i, int j, type_of_matrix typ)
 void generator::prepare_picture()
 {
 	double min = 2, max = -2;
-	for (int i = 0; i < width; i++)
+	/*for (int i = 0; i < width; i++)
 	{
 		for (int j = 0; j < height; j++)
 		{
 			if (matrix_mask[i][j] > 0.5)
 			{
 				if (matrix[i+offset][j+ offset]  > max)
-					max = matrix[i][j];
+					max = matrix[i + offset][j + offset];
 				if (matrix[i+ offset][j+ offset]  < min)
-					min = matrix[i][j];
+					min = matrix[i + offset][j + offset];
 			}
 		}
-	}
+	}*/
 	min = -0.5;
 	max = 0;
 	double gap = max - min;
